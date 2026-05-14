@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Camera, CheckCircle2, Square, ScanLine } from 'lucide-react';
 import { QRScanner } from '@/components/QRScanner';
 import { formatTimeAZ } from '@/lib/timezone';
+import { verifyAttendanceLocation } from '@/lib/geofence';
 
 const Scanner = () => {
   const [active, setActive] = useState(false);
@@ -14,6 +15,8 @@ const Scanner = () => {
 
   const onScan = async (data: string) => {
     if (!data.startsWith('MCR:')) { toast.error('Invalid QR code'); return; }
+    const ok = await verifyAttendanceLocation();
+    if (!ok) return;
     const timeStr = formatTimeAZ(new Date());
     try {
       const { data: result, error } = await supabase.functions.invoke('qr-attendance', {

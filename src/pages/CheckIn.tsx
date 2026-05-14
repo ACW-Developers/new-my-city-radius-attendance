@@ -19,6 +19,7 @@ import {
 import { getTodayDateStringAZ, getCurrentHourAZ, formatTimeAZ, formatDateAZ } from '@/lib/timezone';
 import { QRScanner } from '@/components/QRScanner';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
+import { verifyAttendanceLocation } from '@/lib/geofence';
 
 const BIWEEKLY_TARGET_HOURS = 80;
 const PAUSE_REASONS = ['Lunch Break', 'Appointment', 'Personal Break', 'Meeting', 'Other'];
@@ -150,6 +151,11 @@ const CheckIn = () => {
   const performCheckIn = async (method: string, targetUserId?: string) => {
     const uid = targetUserId || user?.id;
     if (!uid) return;
+    // Geofence: enforce on-site for personal check-ins (admin scanning of others is gated separately)
+    if (!targetUserId) {
+      const ok = await verifyAttendanceLocation();
+      if (!ok) return false;
+    }
     const now = new Date().toISOString();
     const { error } = await supabase.from('attendance_records').insert({
       user_id: uid, date: today, check_in: now, status: 'checked_in', pauses: [],
@@ -177,7 +183,9 @@ const CheckIn = () => {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutMethod, setCheckoutMethod] = useState<'manual' | 'fingerprint'>('manual');
 
-  const requestCheckout = (method: 'manual' | 'fingerprint') => {
+  const requestCheckout = async (method: 'manual' | 'fingerprint') => {
+    const ok = await verifyAttendanceLocation();
+    if (!ok) return;
     setCheckoutMethod(method);
     setCheckoutOpen(true);
   };
@@ -196,6 +204,8 @@ const CheckIn = () => {
   // Admin continuous QR scanning — uses edge function so session keeps working even if admin logs out
   const handleAdminQRScan = async (data: string) => {
     if (!data.startsWith('MCR:')) { toast.error('Invalid QR code'); return; }
+    const ok = await verifyAttendanceLocation();
+    if (!ok) return;
     const timeStr = formatTimeAZ(new Date());
     try {
       const { data: result, error } = await supabase.functions.invoke('qr-attendance', {
