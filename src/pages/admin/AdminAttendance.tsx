@@ -128,8 +128,8 @@ const AdminAttendance = () => {
   const printEmployeeAttendance = (rec: any) => {
     const name = getName(rec.user_id);
     const email = getEmail(rec.user_id);
-    const checkIn = rec.check_in ? new Date(rec.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
-    const checkOut = rec.check_out ? new Date(rec.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+    const checkIn = rec.check_in ? new Date(rec.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+    const checkOut = rec.check_out ? new Date(rec.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
     const hoursWorked = (Number(rec.total_worked_minutes || 0) / 60).toFixed(2);
     const breaks = Array.isArray(rec.pauses) ? rec.pauses.length : 0;
     const status = rec.status === 'checked_in' ? 'Working' : rec.status === 'paused' ? 'Paused' : 'Completed';
@@ -139,7 +139,7 @@ const AdminAttendance = () => {
       ? rec.pauses.map((p: any, i: number) => {
           const s = new Date(p.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           const e = p.end ? new Date(p.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing';
-          const dur = p.end ? Math.round((new Date(p.end).getTime() - new Date(p.start).getTime()) / 60000) : '—';
+          const dur = p.end ? Math.round((new Date(p.end).getTime() - new Date(p.start).getTime()) / 60000) : '-';
           return `<tr><td style="padding:6px 12px;border:1px solid #e5e7eb;">${i + 1}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${p.reason || 'Break'}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${s}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${e}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${dur}${typeof dur === 'number' ? ' min' : ''}</td></tr>`;
         }).join('')
       : '';
@@ -201,8 +201,8 @@ const AdminAttendance = () => {
   const buildTablePdfHtml = (title: string, subtitle: string, recs: any[], includeEmployee: boolean, summary?: { label: string; value: string }[]) => {
     const rows = recs.map(r => {
       const hours = (Number(r.total_worked_minutes || 0) / 60).toFixed(2);
-      const ci = r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
-      const co = r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+      const ci = r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+      const co = r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
       const status = r.status === 'checked_in' ? 'Working' : r.status === 'paused' ? 'Paused' : 'Completed';
       const breaks = Array.isArray(r.pauses) ? r.pauses.length : 0;
       const dateStr = new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -317,7 +317,7 @@ const AdminAttendance = () => {
       const breaks = empRecords.reduce((s, r) => s + (Array.isArray(r.pauses) ? r.pauses.length : 0), 0);
 
       const html = buildTablePdfHtml(
-        `Attendance — ${empName}`,
+        `Attendance - ${empName}`,
         `${empName} • ${dateFrom} to ${dateTo}`,
         empRecords,
         false,
@@ -339,7 +339,7 @@ const AdminAttendance = () => {
 
     toast.dismiss('biweekly');
     if (blocked > 0) {
-      toast.warning(`Generated ${opened} PDFs. ${blocked} were blocked — please allow popups for this site.`);
+      toast.warning(`Generated ${opened} PDFs. ${blocked} were blocked - please allow popups for this site.`);
     } else {
       toast.success(`Generated ${opened} PDF${opened === 1 ? '' : 's'} (one per employee)`);
     }
@@ -469,8 +469,8 @@ const AdminAttendance = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm">{new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</TableCell>
-                      <TableCell>{r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</TableCell>
-                      <TableCell>{r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</TableCell>
+                      <TableCell>{r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
+                      <TableCell>{r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
                       <TableCell>{Array.isArray(r.pauses) ? r.pauses.length : 0}</TableCell>
                       <TableCell className="font-semibold">{(Number(r.total_worked_minutes || 0) / 60).toFixed(1)}h</TableCell>
                       <TableCell>

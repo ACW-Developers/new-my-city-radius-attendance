@@ -55,7 +55,7 @@ const Scanner = () => {
             <ScanLine className="size-5 text-primary" />
             <div>
               <h1 className="text-lg font-semibold">Attendance Scanner</h1>
-              <p className="text-2xs text-muted-foreground">Standalone session — keeps running without admin login</p>
+              <p className="text-2xs text-muted-foreground">Standalone session - keeps running without admin login</p>
             </div>
           </div>
           <Badge variant={active ? 'default' : 'secondary'} className="text-2xs">

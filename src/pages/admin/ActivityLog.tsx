@@ -131,7 +131,7 @@ const ActivityLog = () => {
                         {log.action?.replace(/_/g, ' ')}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm max-w-[250px] truncate">{log.details || '—'}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm max-w-[250px] truncate">{log.details || '-'}</TableCell>
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                       {new Date(log.created_at).toLocaleString()}
                     </TableCell>

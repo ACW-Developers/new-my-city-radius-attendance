@@ -154,7 +154,7 @@ function FingerprintAttendancePanel() {
       }
     } catch (err: any) {
       if (err.name === 'NotAllowedError') {
-        // User cancelled — do nothing
+        // User cancelled - do nothing
       } else if (err.name === 'SecurityError' || err.message?.includes('discoverable')) {
         setNotRegistered(true);
       } else {
@@ -201,7 +201,7 @@ function FingerprintAttendancePanel() {
           </div>
           <p className="text-sm font-medium text-foreground">{lastResult.employee}</p>
           <p className="text-xs text-muted-foreground">
-            {lastResult.action === 'checked_in' ? 'Successfully checked in' : `Checked out — ${formatWorkedTime(lastResult.worked_minutes || 0)}`}
+            {lastResult.action === 'checked_in' ? 'Successfully checked in' : `Checked out - ${formatWorkedTime(lastResult.worked_minutes || 0)}`}
           </p>
           <Button onClick={() => { setLastResult(null); setNotRegistered(false); }} variant="outline" size="sm" className="text-xs mt-2">
             Next Employee
@@ -231,7 +231,7 @@ function FingerprintAttendancePanel() {
           </button>
           <p className="text-sm font-medium text-foreground">{processing ? 'Verifying...' : 'Tap to Sign In'}</p>
           <p className="text-2xs text-muted-foreground text-center max-w-[220px]">
-            Place your finger on the sensor to check in or out — no login needed
+            Place your finger on the sensor to check in or out - no login needed
           </p>
         </div>
       )}

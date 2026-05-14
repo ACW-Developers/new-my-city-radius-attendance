@@ -1,5 +1,5 @@
 // Geofencing for attendance check-in / check-out.
-// Login is allowed anywhere — only attendance actions are restricted.
+// Login is allowed anywhere - only attendance actions are restricted.
 
 import { toast } from 'sonner';
 

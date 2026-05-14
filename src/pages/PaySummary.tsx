@@ -48,7 +48,7 @@ const PaySummary = () => {
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-[hsl(var(--accent-blue))]/30 bg-background/70 backdrop-blur px-3 py-1.5 self-start sm:self-auto">
           <CalendarDays className="size-4 text-[hsl(var(--accent-blue))]" />
-          <span className="text-xs font-medium text-foreground">{start.toLocaleDateString()} — {end.toLocaleDateString()}</span>
+          <span className="text-xs font-medium text-foreground">{start.toLocaleDateString()} - {end.toLocaleDateString()}</span>
         </div>
       </div>
 

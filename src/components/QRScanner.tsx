@@ -321,7 +321,7 @@ export function QRScanner({ onScan, scanning, allowDeviceSelection = false }: QR
               {hidListening ? 'Listening for scanner input…' : 'HID scanner mode'}
             </p>
             <p className="text-2xs text-muted-foreground mt-1 max-w-[260px]">
-              Plug in your USB barcode scanner or pair a Bluetooth one. Scan a code — it will be received automatically.
+              Plug in your USB barcode scanner or pair a Bluetooth one. Scan a code - it will be received automatically.
             </p>
           </div>
           {pairedDevices.length > 0 && (

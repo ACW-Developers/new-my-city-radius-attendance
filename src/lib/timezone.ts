@@ -1,4 +1,4 @@
-// Arizona timezone utility — all dates/times in the system use America/Phoenix
+// Arizona timezone utility - all dates/times in the system use America/Phoenix
 export const TIMEZONE = 'America/Phoenix';
 
 export function nowInAZ(): Date {

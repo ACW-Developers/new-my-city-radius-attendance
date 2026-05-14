@@ -1,6 +1,6 @@
 // Centralized biweekly period logic.
 // Admin sets an anchor date (the first day of the first biweekly period).
-// The system auto-advances every 14 days from that anchor — so once a period
+// The system auto-advances every 14 days from that anchor - so once a period
 // lapses, the "current" period rolls forward automatically.
 
 export interface BiweeklyPeriod {
@@ -63,5 +63,5 @@ export function getBiweeklyPeriodByOffset(anchor: string | undefined | null, off
 }
 
 export function formatPeriodLabel(p: BiweeklyPeriod): string {
-  return `${p.start.toLocaleDateString()} — ${p.end.toLocaleDateString()}`;
+  return `${p.start.toLocaleDateString()} - ${p.end.toLocaleDateString()}`;
 }

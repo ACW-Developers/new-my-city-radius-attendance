@@ -201,7 +201,7 @@ const CheckIn = () => {
     }
   };
 
-  // Admin continuous QR scanning — uses edge function so session keeps working even if admin logs out
+  // Admin continuous QR scanning - uses edge function so session keeps working even if admin logs out
   const handleAdminQRScan = async (data: string) => {
     if (!data.startsWith('MCR:')) { toast.error('Invalid QR code'); return; }
     const ok = await verifyAttendanceLocation();
@@ -271,7 +271,7 @@ const CheckIn = () => {
       .eq('id', record.id);
     if (error) { toast.error('Error pausing'); return; }
     setPauseOpen(false);
-    toast.success(`Timer paused — ${reason} ☕`);
+    toast.success(`Timer paused - ${reason} ☕`);
     await logActivity('pause', `Paused: ${reason}`);
     fetchToday();
   };
@@ -472,7 +472,7 @@ const CheckIn = () => {
                   <Camera className="size-8 text-primary" />
                 </div>
                 <p className="text-xs text-muted-foreground text-center max-w-xs">
-                  Start continuous scanning mode to check workers in/out. The camera stays on — workers scan their QR codes one by one.
+                  Start continuous scanning mode to check workers in/out. The camera stays on - workers scan their QR codes one by one.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button onClick={() => { setAdminScannerActive(true); setScanResults([]); }} size="sm" className="gap-1.5 rounded-full px-6 text-xs">
@@ -483,7 +483,7 @@ const CheckIn = () => {
                   </Button>
                 </div>
                 <p className="text-2xs text-muted-foreground text-center">
-                  Tip: open the standalone session in another tab — it keeps running even after you log out.
+                  Tip: open the standalone session in another tab - it keeps running even after you log out.
                 </p>
               </div>
             ) : (
@@ -649,8 +649,8 @@ const CheckIn = () => {
             <Separator />
             <div className="space-y-1.5">
               {[
-                { label: 'Check In', value: record?.check_in ? formatTimeAZ(record.check_in) : '—' },
-                { label: 'Check Out', value: record?.check_out ? formatTimeAZ(record.check_out) : '—' },
+                { label: 'Check In', value: record?.check_in ? formatTimeAZ(record.check_in) : '-' },
+                { label: 'Check Out', value: record?.check_out ? formatTimeAZ(record.check_out) : '-' },
                 { label: 'Breaks', value: String(Array.isArray(record?.pauses) ? record.pauses.length : 0) },
                 { label: 'Employee', value: profile?.full_name || 'N/A' },
               ].map(item => (

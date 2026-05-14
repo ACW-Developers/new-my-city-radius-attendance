@@ -58,8 +58,8 @@ const AttendanceHistory = () => {
       .map((r) => {
         const hours = (Number(r.total_worked_minutes || 0) / 60).toFixed(2);
         const dateStr = new Date(r.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        const ci = r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
-        const co = r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+        const ci = r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+        const co = r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
         const status = r.status === 'checked_in' ? 'Working' : r.status === 'paused' ? 'Paused' : 'Completed';
         const pauseCount = Array.isArray(r.pauses) ? r.pauses.length : 0;
         return `<tr>
@@ -243,8 +243,8 @@ const AttendanceHistory = () => {
                   return (
                     <TableRow key={r.id} className="hover:bg-accent/30 transition-colors">
                       <TableCell className="font-medium">{new Date(r.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</TableCell>
-                      <TableCell>{r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</TableCell>
-                      <TableCell>{r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</TableCell>
+                      <TableCell>{r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
+                      <TableCell>{r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
                       <TableCell>{Array.isArray(r.pauses) ? r.pauses.length : 0}</TableCell>
                       <TableCell className="font-semibold">{hours.toFixed(1)}h</TableCell>
                       <TableCell className="min-w-[100px]"><Progress value={pct} className="h-2" /></TableCell>
