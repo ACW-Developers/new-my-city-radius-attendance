@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import {
   Settings as SettingsIcon, Shield, Database, Globe, Palette, Eye, EyeOff,
-  Save, Download, RefreshCw, Monitor, Moon, Sun, Server, ToggleLeft, CalendarRange,
+  Save, Download, Upload, RefreshCw, Monitor, Moon, Sun, Server, ToggleLeft, CalendarRange,
 } from 'lucide-react';
 import { getBiweeklyPeriod, formatPeriodLabel } from '@/lib/biweekly';
 
