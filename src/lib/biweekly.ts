@@ -1,14 +1,12 @@
 // Centralized biweekly period logic.
-// Admin sets an anchor date (the first day of the first biweekly period).
-// The system auto-advances every 14 days from that anchor - so once a period
-// lapses, the "current" period rolls forward automatically.
+import { formatDateShortAZ } from './timezone';
 
 export interface BiweeklyPeriod {
   start: Date;
-  end: Date; // inclusive
-  index: number; // 0 = first period from anchor
-  startISO: string; // YYYY-MM-DD
-  endISO: string; // YYYY-MM-DD
+  end: Date;
+  index: number;
+  startISO: string;
+  endISO: string;
 }
 
 const PERIOD_DAYS = 14;
@@ -25,7 +23,6 @@ function parseAnchor(anchor: string | undefined | null): Date {
     const [y, m, d] = anchor.split('-').map(Number);
     return new Date(y, m - 1, d);
   }
-  // Fallback: most recent Monday
   const fallback = new Date();
   fallback.setHours(0, 0, 0, 0);
   while (fallback.getDay() !== 1) fallback.setDate(fallback.getDate() - 1);
@@ -37,19 +34,15 @@ export function getBiweeklyPeriod(anchor: string | undefined | null, ref: Date =
   anchorDate.setHours(0, 0, 0, 0);
   const refDate = new Date(ref);
   refDate.setHours(0, 0, 0, 0);
-
   const dayMs = 24 * 60 * 60 * 1000;
   const diffDays = Math.floor((refDate.getTime() - anchorDate.getTime()) / dayMs);
   const index = Math.floor(diffDays / PERIOD_DAYS);
-
   const start = new Date(anchorDate);
   start.setDate(start.getDate() + index * PERIOD_DAYS);
   const end = new Date(start);
   end.setDate(end.getDate() + PERIOD_DAYS - 1);
-
   return {
-    start,
-    end,
+    start, end,
     index: Math.max(0, index),
     startISO: toISODate(start),
     endISO: toISODate(end),
@@ -60,7 +53,7 @@ export function getBiweeklyPeriodByOffset(anchor: string | undefined | null, off
   const ref = new Date();
   ref.setDate(ref.getDate() + offset * PERIOD_DAYS);
   return getBiweeklyPeriod(anchor, ref);
-import { formatDateShortAZ } from './timezone';
+}
 
 export function formatPeriodLabel(p: BiweeklyPeriod): string {
   return `${formatDateShortAZ(p.start)} - ${formatDateShortAZ(p.end)}`;
