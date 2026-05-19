@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Activity, Search, User, Clock } from 'lucide-react';
+import { formatDateTimeFullAZ } from '@/lib/timezone';
 
 const ActivityLog = () => {
   const { user } = useAuth();
@@ -133,7 +134,7 @@ const ActivityLog = () => {
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm max-w-[250px] truncate">{log.details || '-'}</TableCell>
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                      {new Date(log.created_at).toLocaleString()}
+                      {formatDateTimeFullAZ(log.created_at)}
                     </TableCell>
                   </TableRow>
                 ))}

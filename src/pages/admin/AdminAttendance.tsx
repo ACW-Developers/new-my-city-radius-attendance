@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { CalendarDays, Users, Clock, Search, Pencil, Trash2, Download, Filter, RefreshCw, Printer } from 'lucide-react';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { formatTimeAZ, formatTimeAZ24, formatDateAZ, formatDateShortAZ, formatDateTimeFullAZ } from '@/lib/timezone';
 
 const AdminAttendance = () => {
   const { user } = useAuth();
@@ -80,8 +81,8 @@ const AdminAttendance = () => {
 
   const handleEdit = (rec: any) => {
     setEditRecord(rec);
-    setEditCheckIn(rec.check_in ? new Date(rec.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '');
-    setEditCheckOut(rec.check_out ? new Date(rec.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '');
+    setEditCheckIn(rec.check_in ? formatTimeAZ24(rec.check_in) : '');
+    setEditCheckOut(rec.check_out ? formatTimeAZ24(rec.check_out) : '');
   };
 
   const saveEdit = async () => {
@@ -128,17 +129,17 @@ const AdminAttendance = () => {
   const printEmployeeAttendance = (rec: any) => {
     const name = getName(rec.user_id);
     const email = getEmail(rec.user_id);
-    const checkIn = rec.check_in ? new Date(rec.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
-    const checkOut = rec.check_out ? new Date(rec.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+    const checkIn = rec.check_in ? formatTimeAZ(rec.check_in) : '-';
+    const checkOut = rec.check_out ? formatTimeAZ(rec.check_out) : '-';
     const hoursWorked = (Number(rec.total_worked_minutes || 0) / 60).toFixed(2);
     const breaks = Array.isArray(rec.pauses) ? rec.pauses.length : 0;
     const status = rec.status === 'checked_in' ? 'Working' : rec.status === 'paused' ? 'Paused' : 'Completed';
-    const dateStr = new Date(rec.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const dateStr = formatDateAZ(rec.date);
 
     const breakRows = Array.isArray(rec.pauses) && rec.pauses.length > 0
       ? rec.pauses.map((p: any, i: number) => {
-          const s = new Date(p.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          const e = p.end ? new Date(p.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing';
+          const s = formatTimeAZ(p.start);
+          const e = p.end ? formatTimeAZ(p.end) : 'Ongoing';
           const dur = p.end ? Math.round((new Date(p.end).getTime() - new Date(p.start).getTime()) / 60000) : '-';
           return `<tr><td style="padding:6px 12px;border:1px solid #e5e7eb;">${i + 1}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${p.reason || 'Break'}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${s}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${e}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${dur}${typeof dur === 'number' ? ' min' : ''}</td></tr>`;
         }).join('')
@@ -170,7 +171,7 @@ const AdminAttendance = () => {
     </style></head><body>
       <div class="header">
         <div><div class="company">My City Radius</div><div class="subtitle">Employee Attendance System</div></div>
-        <div><div class="doc-title">Attendance Record</div><div class="doc-date">Printed: ${new Date().toLocaleDateString()}</div></div>
+        <div><div class="doc-title">Attendance Record</div><div class="doc-date">Printed: ${formatDateShortAZ(new Date())} (AZ)</div></div>
       </div>
       <div class="section">
         <div class="section-title">Employee Information</div>
@@ -187,7 +188,7 @@ const AdminAttendance = () => {
         <div class="stat-card"><div class="stat-label">Hours Worked</div><div class="stat-value">${hoursWorked}h</div></div>
       </div>
       ${breakRows ? `<div class="section"><div class="section-title">Break Details (${breaks})</div><table><thead><tr><th>#</th><th>Reason</th><th>Start</th><th>End</th><th>Duration</th></tr></thead><tbody>${breakRows}</tbody></table></div>` : ''}
-      <div class="footer"><span>My City Radius · Attendance Report</span><span>Generated on ${new Date().toLocaleString()}</span></div>
+      <div class="footer"><span>My City Radius · Attendance Report</span><span>Generated ${formatDateTimeFullAZ(new Date())} (AZ)</span></div>
     </body></html>`;
 
     const printWindow = window.open('', '_blank');
@@ -201,11 +202,11 @@ const AdminAttendance = () => {
   const buildTablePdfHtml = (title: string, subtitle: string, recs: any[], includeEmployee: boolean, summary?: { label: string; value: string }[]) => {
     const rows = recs.map(r => {
       const hours = (Number(r.total_worked_minutes || 0) / 60).toFixed(2);
-      const ci = r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
-      const co = r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+      const ci = r.check_in ? formatTimeAZ(r.check_in) : '-';
+      const co = r.check_out ? formatTimeAZ(r.check_out) : '-';
       const status = r.status === 'checked_in' ? 'Working' : r.status === 'paused' ? 'Paused' : 'Completed';
       const breaks = Array.isArray(r.pauses) ? r.pauses.length : 0;
-      const dateStr = new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const dateStr = formatDateShortAZ(r.date);
       return `<tr>
         ${includeEmployee ? `<td><div style="font-weight:600">${getName(r.user_id)}</div><div style="font-size:10px;color:#64748b">${getEmail(r.user_id)}</div></td>` : ''}
         <td>${dateStr}</td>
@@ -246,7 +247,7 @@ const AdminAttendance = () => {
 </style></head><body>
   <div class="header">
     <div><div class="brand">My City Radius</div><div class="brand-sub">Time & Attendance</div></div>
-    <div class="meta"><strong style="color:#0f172a;font-size:13px;display:block;margin-bottom:2px">${title}</strong>Generated ${new Date().toLocaleString()}</div>
+    <div class="meta"><strong style="color:#0f172a;font-size:13px;display:block;margin-bottom:2px">${title}</strong>Generated ${formatDateTimeFullAZ(new Date())} (AZ)</div>
   </div>
   <h1>${title}</h1>
   <div class="subtitle">${subtitle}</div>
@@ -468,9 +469,9 @@ const AdminAttendance = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm">{new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</TableCell>
-                      <TableCell>{r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
-                      <TableCell>{r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
+                      <TableCell className="text-sm">{formatDateShortAZ(r.date).replace(/, \d{4}$/, '')}</TableCell>
+                      <TableCell>{r.check_in ? formatTimeAZ(r.check_in) : '-'}</TableCell>
+                      <TableCell>{r.check_out ? formatTimeAZ(r.check_out) : '-'}</TableCell>
                       <TableCell>{Array.isArray(r.pauses) ? r.pauses.length : 0}</TableCell>
                       <TableCell className="font-semibold">{(Number(r.total_worked_minutes || 0) / 60).toFixed(1)}h</TableCell>
                       <TableCell>

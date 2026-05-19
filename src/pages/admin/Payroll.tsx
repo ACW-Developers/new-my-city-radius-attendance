@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Banknote, Users, Clock, Search, TrendingUp } from 'lucide-react';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { formatDateShortAZ } from '@/lib/timezone';
 
 const Payroll = () => {
   const { currentPeriod } = useSystemSettings();
@@ -55,7 +56,7 @@ const Payroll = () => {
           <p className="text-xs text-muted-foreground mt-0.5">Auto-synced with current biweekly period</p>
         </div>
         <Badge variant="secondary" className="gap-1 text-xs border border-[hsl(var(--accent-blue))]/30 self-start sm:self-auto">
-          {start.toLocaleDateString()} - {end.toLocaleDateString()}
+          {formatDateShortAZ(start)} - {formatDateShortAZ(end)}
         </Badge>
       </div>
 

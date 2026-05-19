@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CalendarDays, Clock, TrendingUp, Coffee, Printer, X } from 'lucide-react';
+import { formatTimeAZ, formatDateShortAZ, formatDateWeekdayShortAZ, formatDateTimeFullAZ } from '@/lib/timezone';
 
 const AttendanceHistory = () => {
   const { user, profile } = useAuth();
@@ -57,9 +58,9 @@ const AttendanceHistory = () => {
     const rows = filtered
       .map((r) => {
         const hours = (Number(r.total_worked_minutes || 0) / 60).toFixed(2);
-        const dateStr = new Date(r.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        const ci = r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
-        const co = r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-';
+        const dateStr = formatDateWeekdayShortAZ(r.date) + ', ' + new Date(r.date).getFullYear();
+        const ci = r.check_in ? formatTimeAZ(r.check_in) : '-';
+        const co = r.check_out ? formatTimeAZ(r.check_out) : '-';
         const status = r.status === 'checked_in' ? 'Working' : r.status === 'paused' ? 'Paused' : 'Completed';
         const pauseCount = Array.isArray(r.pauses) ? r.pauses.length : 0;
         return `<tr>
@@ -108,7 +109,7 @@ const AttendanceHistory = () => {
     <div class="meta">
       <strong>${employeeName}</strong>
       ${employeeEmail}<br/>
-      Generated ${new Date().toLocaleString()}
+      Generated ${formatDateTimeFullAZ(new Date())} (Arizona)
     </div>
   </div>
   <h1>Attendance Report</h1>
@@ -242,9 +243,9 @@ const AttendanceHistory = () => {
                   const pct = Math.min((hours / 8) * 100, 100);
                   return (
                     <TableRow key={r.id} className="hover:bg-accent/30 transition-colors">
-                      <TableCell className="font-medium">{new Date(r.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</TableCell>
-                      <TableCell>{r.check_in ? new Date(r.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
-                      <TableCell>{r.check_out ? new Date(r.check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</TableCell>
+                      <TableCell className="font-medium">{formatDateWeekdayShortAZ(r.date)}</TableCell>
+                      <TableCell>{r.check_in ? formatTimeAZ(r.check_in) : '-'}</TableCell>
+                      <TableCell>{r.check_out ? formatTimeAZ(r.check_out) : '-'}</TableCell>
                       <TableCell>{Array.isArray(r.pauses) ? r.pauses.length : 0}</TableCell>
                       <TableCell className="font-semibold">{hours.toFixed(1)}h</TableCell>
                       <TableCell className="min-w-[100px]"><Progress value={pct} className="h-2" /></TableCell>

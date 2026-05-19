@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { User, Mail, Shield, Save, Camera, Calendar, Briefcase, QrCode, Download, Fingerprint, Trash2, Smartphone } from 'lucide-react';
-import { formatDateAZ } from '@/lib/timezone';
+import { formatDateAZ, formatDateShortAZ } from '@/lib/timezone';
 import { QRCodeSVG } from 'qrcode.react';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 
@@ -238,7 +238,7 @@ const Profile = () => {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-foreground">{cred.device_name || 'Unknown Device'}</p>
-                            <p className="text-xs text-muted-foreground">Registered {new Date(cred.created_at).toLocaleDateString()}</p>
+                            <p className="text-xs text-muted-foreground">Registered {formatDateShortAZ(cred.created_at)}</p>
                           </div>
                         </div>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => handleRemoveCredential(cred.id)}>
