@@ -44,7 +44,6 @@ const Auth = () => {
           <LiveArizonaClock />
         </div>
       </div>
-
       <div className="flex w-full items-center justify-center bg-background p-4 sm:p-6 lg:w-1/2">
         <div className="w-full max-w-sm space-y-3">
           <Card className="border-2 border-primary/30 shadow-xl rounded-2xl overflow-hidden">
@@ -71,19 +70,20 @@ const Auth = () => {
                 <SignupForm isSubmitting={isSubmitting} setIsSubmitting={setIsSubmitting} />
               </TabsContent>
             </Tabs>
-          </Card>
+          
 
-          <div className="text-center space-y-0.5 pt-1">
+          <div className="text-center space-y-0.5 mb-5 pt-1">
             <p className="text-2xs text-muted-foreground">
               © {year} My City Radius. All rights reserved.
             </p>
             <p className="text-2xs text-muted-foreground/80">
-              Built for the City of Maricopa — Phoenix, Arizona
+              Privacy Policy
             </p>
           </div>
+          </Card>
         </div>
       </div>
-
+    
       <Dialog open={fingerprintOpen} onOpenChange={setFingerprintOpen}>
         <DialogContent className="max-w-xs">
           <DialogHeader>
@@ -98,6 +98,7 @@ const Auth = () => {
         </DialogContent>
       </Dialog>
     </div>
+    
   );
 };
 
@@ -405,7 +406,7 @@ function SignupForm({ isSubmitting, setIsSubmitting }: { isSubmitting: boolean; 
         {isSubmitting ? 'Creating account...' : 'Create Account'}
       </Button>
       <CardDescription className="text-center text-2xs">
-        First user to sign up becomes the admin
+        Sign up to create an account
       </CardDescription>
     </form>
   );
