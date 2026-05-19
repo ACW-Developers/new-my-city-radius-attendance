@@ -2,13 +2,18 @@
 export const TIMEZONE = 'America/Phoenix';
 
 export function nowInAZ(): Date {
-  // Returns a Date object representing "now" but we use it with toLocaleString for display
   return new Date();
 }
 
 export function formatTimeAZ(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   return d.toLocaleTimeString('en-US', { timeZone: TIMEZONE, hour: '2-digit', minute: '2-digit' });
+}
+
+// 24h HH:MM in AZ, useful for <input type="time">
+export function formatTimeAZ24(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleTimeString('en-GB', { timeZone: TIMEZONE, hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 export function formatDateAZ(date: Date | string): string {
@@ -21,13 +26,31 @@ export function formatDateShortAZ(date: Date | string): string {
   return d.toLocaleDateString('en-US', { timeZone: TIMEZONE, month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// "Mon, Jan 5"
+export function formatDateWeekdayShortAZ(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleDateString('en-US', { timeZone: TIMEZONE, weekday: 'short', month: 'short', day: 'numeric' });
+}
+
 export function formatDateTimeAZ(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   return d.toLocaleString('en-US', { timeZone: TIMEZONE, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+// Full "Jan 5, 2025, 03:45 PM"
+export function formatDateTimeFullAZ(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleString('en-US', { timeZone: TIMEZONE, month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+// YYYY-MM-DD in AZ for "today"
 export function getTodayDateStringAZ(): string {
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE }).formatToParts(new Date());
+  return toAZDateString(new Date());
+}
+
+// YYYY-MM-DD in AZ for any Date
+export function toAZDateString(date: Date): string {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE }).formatToParts(date);
   const y = parts.find(p => p.type === 'year')!.value;
   const m = parts.find(p => p.type === 'month')!.value;
   const d = parts.find(p => p.type === 'day')!.value;
