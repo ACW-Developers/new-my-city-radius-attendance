@@ -16,7 +16,7 @@ import {
   CheckCircle2, Sun, Moon as MoonIcon, ScanLine,
   ArrowRight, Zap, Activity, Camera, Fingerprint,
 } from 'lucide-react';
-import { getTodayDateStringAZ, getCurrentHourAZ, formatTimeAZ, formatDateAZ } from '@/lib/timezone';
+import { getTodayDateStringAZ, getCurrentHourAZ, formatTimeAZ, formatDateAZ, toAZDateString } from '@/lib/timezone';
 import { QRScanner } from '@/components/QRScanner';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 import { verifyAttendanceLocation } from '@/lib/geofence';
@@ -74,8 +74,8 @@ const CheckIn = () => {
       .from('attendance_records')
       .select('total_worked_minutes')
       .eq('user_id', user.id)
-      .gte('date', periodStart.toISOString().split('T')[0])
-      .lte('date', periodEnd.toISOString().split('T')[0]);
+      .gte('date', toAZDateString(periodStart))
+      .lte('date', toAZDateString(periodEnd));
 
     if (records) {
       setPeriodHours(records.reduce((sum: number, r: any) => sum + Number(r.total_worked_minutes || 0), 0) / 60);
@@ -114,7 +114,7 @@ const CheckIn = () => {
 
   useEffect(() => {
     if (!record || record.status === 'checked_out') return;
-    const check = () => { if (getCurrentHourAZ() >= 17) autoCheckOut(); };
+    const check = () => { if (getCurrentHourAZ() >= 18) autoCheckOut(); };
     const interval = setInterval(check, 60000);
     check();
     return () => clearInterval(interval);
@@ -130,8 +130,8 @@ const CheckIn = () => {
     await supabase.from('attendance_records')
       .update({ check_out: new Date().toISOString(), status: 'checked_out', pauses, total_worked_minutes: workedMinutes })
       .eq('id', record.id);
-    if (user) await supabase.from('activity_logs').insert({ user_id: user.id, action: 'auto_checkout', details: 'Automatically checked out at 5:00 PM Arizona time' });
-    toast.info('Your timer was automatically stopped at 5:00 PM');
+    if (user) await supabase.from('activity_logs').insert({ user_id: user.id, action: 'auto_checkout', details: 'Automatically checked out at 6:00 PM Arizona time' });
+    toast.info('Your timer was automatically stopped at 6:00 PM');
     fetchToday();
   };
 
