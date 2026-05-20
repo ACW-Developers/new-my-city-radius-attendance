@@ -27,6 +27,7 @@ const AdminAttendance = () => {
   const [editRecord, setEditRecord] = useState<any>(null);
   const [editCheckIn, setEditCheckIn] = useState('');
   const [editCheckOut, setEditCheckOut] = useState('');
+  const [editStatus, setEditStatus] = useState<'checked_in' | 'paused' | 'checked_out'>('checked_out');
 
   // Sync dates with current biweekly period when anchor changes
   useEffect(() => {
@@ -83,31 +84,40 @@ const AdminAttendance = () => {
     setEditRecord(rec);
     setEditCheckIn(rec.check_in ? formatTimeAZ24(rec.check_in) : '');
     setEditCheckOut(rec.check_out ? formatTimeAZ24(rec.check_out) : '');
+    setEditStatus((rec.status as any) || 'checked_out');
   };
 
   const saveEdit = async () => {
     if (!editRecord) return;
-    const updates: any = {};
+    const updates: any = { status: editStatus };
     if (editCheckIn) {
       const [h, m] = editCheckIn.split(':');
       const d = new Date(editRecord.date);
       d.setHours(parseInt(h), parseInt(m), 0);
       updates.check_in = d.toISOString();
     }
-    if (editCheckOut) {
+    // Reverting to in-progress clears the check-out and recomputed hours
+    if (editStatus === 'checked_in' || editStatus === 'paused') {
+      updates.check_out = null;
+      updates.total_worked_minutes = 0;
+    } else if (editCheckOut) {
       const [h, m] = editCheckOut.split(':');
       const d = new Date(editRecord.date);
       d.setHours(parseInt(h), parseInt(m), 0);
       updates.check_out = d.toISOString();
-      updates.status = 'checked_out';
     }
-    if (updates.check_in && updates.check_out) {
+    if (updates.check_in && updates.check_out && editStatus === 'checked_out') {
       const diff = (new Date(updates.check_out).getTime() - new Date(updates.check_in).getTime()) / 60000;
       updates.total_worked_minutes = Math.max(0, diff);
     }
     const { error } = await supabase.from('attendance_records').update(updates).eq('id', editRecord.id);
     if (error) toast.error('Error updating');
-    else { toast.success('Record updated'); await logActivity('edit_attendance', `Edited attendance for ${getName(editRecord.user_id)}`); setEditRecord(null); fetchData(); }
+    else {
+      toast.success(editStatus === 'checked_out' ? 'Record updated' : 'Reverted to In Progress');
+      await logActivity('edit_attendance', `Edited attendance for ${getName(editRecord.user_id)} → ${editStatus}`);
+      setEditRecord(null);
+      fetchData();
+    }
   };
 
   const deleteRecord = async (rec: any) => {
@@ -501,8 +511,25 @@ const AdminAttendance = () => {
         <DialogContent>
           <DialogHeader><DialogTitle>Edit Attendance Record</DialogTitle></DialogHeader>
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={editStatus} onValueChange={(v) => setEditStatus(v as any)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="checked_in">In Progress (Working)</SelectItem>
+                  <SelectItem value="paused">On Break</SelectItem>
+                  <SelectItem value="checked_out">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+              {editStatus !== 'checked_out' && (
+                <p className="text-2xs text-muted-foreground">Check-out time will be cleared so the user can check out themselves.</p>
+              )}
+            </div>
             <div className="space-y-2"><Label>Check In Time</Label><Input type="time" value={editCheckIn} onChange={e => setEditCheckIn(e.target.value)} /></div>
-            <div className="space-y-2"><Label>Check Out Time</Label><Input type="time" value={editCheckOut} onChange={e => setEditCheckOut(e.target.value)} /></div>
+            <div className="space-y-2">
+              <Label>Check Out Time</Label>
+              <Input type="time" value={editCheckOut} onChange={e => setEditCheckOut(e.target.value)} disabled={editStatus !== 'checked_out'} />
+            </div>
             <Button onClick={saveEdit} className="w-full">Save Changes</Button>
           </div>
         </DialogContent>
