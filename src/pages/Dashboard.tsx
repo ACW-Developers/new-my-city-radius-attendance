@@ -6,7 +6,7 @@ import {
   Clock, CalendarDays, Banknote, TrendingUp, UserCheck, Coffee,
   Flame, Award, Activity, Sun, Moon as MoonIcon, ArrowRight, Sparkles, RefreshCw,
 } from 'lucide-react';
-import { getAutoCheckoutHourForRoles, formatHour12 } from '@/lib/roleLabels';
+
 import { toast } from 'sonner';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -172,8 +172,6 @@ const Dashboard = () => {
 
   const radialData = [{ name: 'Today', value: dailyProgress, fill: 'hsl(var(--primary))' }];
 
-  const autoOutHour = getAutoCheckoutHourForRoles(roles as string[]);
-  const autoOutLabel = formatHour12(autoOutHour);
 
   const handleHardRefresh = async () => {
     try {
@@ -240,7 +238,7 @@ const Dashboard = () => {
           <CardHeader className="pb-1 px-4 pt-3">
             <CardTitle className="flex items-center gap-1.5 text-xs font-medium">
               <Activity className="size-3.5 text-primary" /> Live Shift
-              <Badge variant="secondary" className="ml-auto text-2xs">Auto-out {autoOutLabel}</Badge>
+              
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4 pt-2">

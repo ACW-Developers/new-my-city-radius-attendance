@@ -282,19 +282,13 @@ Deno.serve(async (req) => {
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      // Auto-checkout (no confirmation) for QR scan path
-      const result = await performCheckout(existingRecord.id);
-      if (result.error) {
-        return new Response(JSON.stringify({ error: result.error }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      // Require explicit confirmation before checking out (no auto-checkout).
       return new Response(
         JSON.stringify({
-          action: "checked_out",
+          action: "prompt_checkout",
           employee: profile.full_name,
-          worked_minutes: result.worked_minutes,
+          record_id: existingRecord.id,
+          check_in: existingRecord.check_in,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
