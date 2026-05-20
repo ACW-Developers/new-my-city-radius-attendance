@@ -196,6 +196,15 @@ const Dashboard = () => {
               {statusBadge.text}
             </span>
             <Button asChildLink to="/dashboard/checkin" />
+            <button
+              type="button"
+              onClick={handleHardRefresh}
+              title="Clear cache & refresh"
+              aria-label="Refresh and clear cache"
+              className="inline-flex size-8 items-center justify-center rounded-full border border-border/40 bg-background/60 backdrop-blur text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+            >
+              <RefreshCw className="size-3.5" />
+            </button>
           </div>
         </div>
       </div>
