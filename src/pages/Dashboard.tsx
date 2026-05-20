@@ -4,8 +4,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   Clock, CalendarDays, Banknote, TrendingUp, UserCheck, Coffee,
-  Flame, Award, Activity, Sun, Moon as MoonIcon, ArrowRight, Sparkles,
+  Flame, Award, Activity, Sun, Moon as MoonIcon, ArrowRight, Sparkles, RefreshCw,
 } from 'lucide-react';
+import { getAutoCheckoutHourForRoles, formatHour12 } from '@/lib/roleLabels';
+import { toast } from 'sonner';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
