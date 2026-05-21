@@ -126,7 +126,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!todayRecord || todayRecord.status === 'checked_out') {
       if (todayRecord) {
-        setLiveElapsed(Number(todayRecord.total_worked_minutes || 0) * 60);
+        setLiveElapsed(Math.floor(Number(todayRecord.total_worked_minutes || 0) * 60));
       }
       return;
     }
@@ -164,9 +164,10 @@ const Dashboard = () => {
   })();
 
   const fmtElapsed = (s: number) => {
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = s % 60;
+    const total = Math.floor(s);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const sec = total % 60;
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   };
 
