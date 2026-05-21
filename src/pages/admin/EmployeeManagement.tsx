@@ -35,7 +35,15 @@ const EmployeeManagement = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchEmployees(); }, []);
+  useEffect(() => {
+    fetchEmployees();
+    const channel = supabase
+      .channel('employee-management-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchEmployees())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_roles' }, () => fetchEmployees())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const logActivity = async (action: string, details?: string) => {
     if (!user) return;
