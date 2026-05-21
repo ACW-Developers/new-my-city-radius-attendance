@@ -10,6 +10,7 @@ export const ALLOWED_SITES: GeoSite[] = [
   { name: 'Site 2', lat: 32.894982, lng: -111.752173 },
   { name: 'Site 3', lat: 33.363018, lng: -111.878134 },
   { name: 'Site 4', lat: 32.894901, lng: -111.752259 },
+  { name: 'Site 5', lat: 33.365848, lng: -111.941593 }
 ];
 
 export const ALLOWED_RADIUS_METERS = 1000; // 1 km
