@@ -152,6 +152,12 @@ function FingerprintAttendancePanel({ onDone }: { onDone?: () => void }) {
     setProcessing(true);
     setNotRegistered(false);
 
+    const inRange = await verifyAttendanceLocation();
+    if (!inRange) {
+      setProcessing(false);
+      return;
+    }
+
     try {
       const challenge = crypto.getRandomValues(new Uint8Array(32));
 
