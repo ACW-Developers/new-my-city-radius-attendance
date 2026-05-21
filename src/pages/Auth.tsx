@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Fingerprint, CheckCircle2, AlertCircle, ArrowRight, Square } from 'lucide-react';
 import logo from '@/assets/my_city_logo.png';
 import bgImage from '@/assets/bg7.jpg';
+import { verifyAttendanceLocation } from '@/lib/geofence';
 
 const Auth = () => {
   const { session, loading } = useAuth();
@@ -151,6 +152,12 @@ function FingerprintAttendancePanel({ onDone }: { onDone?: () => void }) {
     setProcessing(true);
     setNotRegistered(false);
 
+    const inRange = await verifyAttendanceLocation();
+    if (!inRange) {
+      setProcessing(false);
+      return;
+    }
+
     try {
       const challenge = crypto.getRandomValues(new Uint8Array(32));
 
@@ -207,6 +214,8 @@ function FingerprintAttendancePanel({ onDone }: { onDone?: () => void }) {
 
   const confirmCheckout = async () => {
     if (!checkoutPrompt) return;
+    const inRange = await verifyAttendanceLocation();
+    if (!inRange) return;
     setProcessing(true);
     const { data: result, error } = await supabase.functions.invoke('qr-attendance', {
       body: { action: 'confirm_checkout', record_id: checkoutPrompt.record_id },
