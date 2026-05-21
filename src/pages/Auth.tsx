@@ -38,7 +38,7 @@ const Auth = () => {
         </p>
         <p className="text-2xs text-amber-800 leading-snug">
           We experienced a temporary system inconvenience which has now been fixed.
-          Please <span className="font-bold">Sign up </span>your account again & Register your fingerprint for easy checkin/out. Your previous details from <span className="font-medium">Monday 28 May 2026</span> will be restored and added shortly.
+          Please <span className="font-bold">Sign up </span>your account again & Register your fingerprint for easy checkin/out. Your previous details from <span className="font-medium">Monday 18 May 2026</span> will be restored and added shortly.
         </p>
       </CardContent>
     </Card>
