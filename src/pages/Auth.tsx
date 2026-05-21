@@ -214,6 +214,8 @@ function FingerprintAttendancePanel({ onDone }: { onDone?: () => void }) {
 
   const confirmCheckout = async () => {
     if (!checkoutPrompt) return;
+    const inRange = await verifyAttendanceLocation();
+    if (!inRange) return;
     setProcessing(true);
     const { data: result, error } = await supabase.functions.invoke('qr-attendance', {
       body: { action: 'confirm_checkout', record_id: checkoutPrompt.record_id },
