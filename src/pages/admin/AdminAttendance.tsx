@@ -87,24 +87,27 @@ const AdminAttendance = () => {
     setEditStatus((rec.status as any) || 'checked_out');
   };
 
+  // Arizona is fixed UTC-07:00 (no DST). Build an absolute timestamp anchored to AZ time.
+  const buildAzTimestamp = (dateStr: string, timeStr: string) => {
+    const [h, m] = timeStr.split(':');
+    const hh = String(parseInt(h)).padStart(2, '0');
+    const mm = String(parseInt(m)).padStart(2, '0');
+    // dateStr is YYYY-MM-DD from the record's `date` column (AZ calendar day)
+    return new Date(`${dateStr}T${hh}:${mm}:00-07:00`).toISOString();
+  };
+
   const saveEdit = async () => {
     if (!editRecord) return;
     const updates: any = { status: editStatus };
     if (editCheckIn) {
-      const [h, m] = editCheckIn.split(':');
-      const d = new Date(editRecord.date);
-      d.setHours(parseInt(h), parseInt(m), 0);
-      updates.check_in = d.toISOString();
+      updates.check_in = buildAzTimestamp(editRecord.date, editCheckIn);
     }
     // Reverting to in-progress clears the check-out and recomputed hours
     if (editStatus === 'checked_in' || editStatus === 'paused') {
       updates.check_out = null;
       updates.total_worked_minutes = 0;
     } else if (editCheckOut) {
-      const [h, m] = editCheckOut.split(':');
-      const d = new Date(editRecord.date);
-      d.setHours(parseInt(h), parseInt(m), 0);
-      updates.check_out = d.toISOString();
+      updates.check_out = buildAzTimestamp(editRecord.date, editCheckOut);
     }
     if (updates.check_in && updates.check_out && editStatus === 'checked_out') {
       const diff = (new Date(updates.check_out).getTime() - new Date(updates.check_in).getTime()) / 60000;
