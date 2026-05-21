@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Fingerprint, CheckCircle2, AlertCircle, ArrowRight, Square } from 'lucide-react';
 import logo from '@/assets/my_city_logo.png';
 import bgImage from '@/assets/bg7.jpg';
+import { verifyAttendanceLocation } from '@/lib/geofence';
 
 const Auth = () => {
   const { session, loading } = useAuth();
