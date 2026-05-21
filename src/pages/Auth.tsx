@@ -29,6 +29,21 @@ const Auth = () => {
   if (session) return <Navigate to="/dashboard" replace />;
 
   const year = new Date().getFullYear();
+  function UpdateAlertCard() {
+  return (
+    <Card className="border-amber-400/40 bg-amber-50/60 shadow-sm rounded-xl mb-3">
+      <CardContent className="p-3 space-y-1">
+        <p className="text-xs font-semibold text-amber-700">
+          ⚠️ Update Alert
+        </p>
+        <p className="text-2xs text-amber-800 leading-snug">
+          We experienced a temporary system inconvenience which has now been fixed.
+          Please sign up your account again. Your previous details from <span className="font-medium">Monday 28 May 2026</span> will be restored and added shortly.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
 
   return (
     <div className="flex min-h-screen">
@@ -46,6 +61,7 @@ const Auth = () => {
       </div>
       <div className="flex w-full items-center justify-center bg-background p-4 sm:p-6 lg:w-1/2">
         <div className="w-full max-w-sm space-y-3">
+          <UpdateAlertCard />
           <Card className="border-2 border-primary/30 shadow-xl rounded-2xl overflow-hidden">
             <div className="flex flex-col items-center gap-2 px-6 pt-6 pb-3">
               <img src={logo} alt="My City Radius" className="h-12 w-auto" />
