@@ -126,7 +126,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!todayRecord || todayRecord.status === 'checked_out') {
       if (todayRecord) {
-        setLiveElapsed(Number(todayRecord.total_worked_minutes || 0) * 60);
+        setLiveElapsed(Math.floor(Number(todayRecord.total_worked_minutes || 0) * 60));
       }
       return;
     }
