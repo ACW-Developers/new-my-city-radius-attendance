@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { CalendarDays, Users, Clock, Search, Pencil, Trash2, Download, Filter, RefreshCw, Printer } from 'lucide-react';
+import { CalendarDays, Users, Clock, Search, Pencil, Trash2, Download, Filter, RefreshCw, Printer, Plus } from 'lucide-react';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { formatTimeAZ, formatTimeAZ24, formatDateAZ, formatDateShortAZ, formatDateTimeFullAZ } from '@/lib/timezone';
 
