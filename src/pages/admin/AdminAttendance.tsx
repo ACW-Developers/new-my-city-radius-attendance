@@ -584,6 +584,43 @@ const AdminAttendance = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add Attendance Record</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Employee</Label>
+              <Select value={addUserId} onValueChange={setAddUserId}>
+                <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
+                <SelectContent>
+                  {employees.map(emp => (
+                    <SelectItem key={emp.user_id} value={emp.user_id}>{emp.full_name || emp.email}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2"><Label>Date (Arizona)</Label><Input type="date" value={addDate} onChange={e => setAddDate(e.target.value)} /></div>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={addStatus} onValueChange={(v) => setAddStatus(v as any)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="checked_in">In Progress (Working)</SelectItem>
+                  <SelectItem value="paused">On Break</SelectItem>
+                  <SelectItem value="checked_out">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2"><Label>Check In Time (AZ)</Label><Input type="time" value={addCheckIn} onChange={e => setAddCheckIn(e.target.value)} /></div>
+            <div className="space-y-2">
+              <Label>Check Out Time (AZ)</Label>
+              <Input type="time" value={addCheckOut} onChange={e => setAddCheckOut(e.target.value)} disabled={addStatus !== 'checked_out'} />
+            </div>
+            <Button onClick={saveAdd} disabled={addSaving} className="w-full">{addSaving ? 'Saving...' : 'Add Record'}</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
