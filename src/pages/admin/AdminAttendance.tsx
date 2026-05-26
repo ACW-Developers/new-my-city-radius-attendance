@@ -28,6 +28,13 @@ const AdminAttendance = () => {
   const [editCheckIn, setEditCheckIn] = useState('');
   const [editCheckOut, setEditCheckOut] = useState('');
   const [editStatus, setEditStatus] = useState<'checked_in' | 'paused' | 'checked_out'>('checked_out');
+  const [addOpen, setAddOpen] = useState(false);
+  const [addUserId, setAddUserId] = useState<string>('');
+  const [addDate, setAddDate] = useState('');
+  const [addCheckIn, setAddCheckIn] = useState('');
+  const [addCheckOut, setAddCheckOut] = useState('');
+  const [addStatus, setAddStatus] = useState<'checked_in' | 'paused' | 'checked_out'>('checked_out');
+  const [addSaving, setAddSaving] = useState(false);
 
   // Sync dates with current biweekly period when anchor changes
   useEffect(() => {
