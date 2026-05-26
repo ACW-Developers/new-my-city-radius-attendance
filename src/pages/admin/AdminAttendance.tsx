@@ -137,6 +137,43 @@ const AdminAttendance = () => {
     else { toast.success('Record deleted'); await logActivity('delete_attendance', `Deleted attendance for ${getName(rec.user_id)}`); fetchData(); }
   };
 
+  const openAdd = () => {
+    setAddUserId('');
+    setAddDate(new Date().toLocaleDateString('en-CA', { timeZone: 'America/Phoenix' }));
+    setAddCheckIn('09:00');
+    setAddCheckOut('17:00');
+    setAddStatus('checked_out');
+    setAddOpen(true);
+  };
+
+  const saveAdd = async () => {
+    if (!addUserId) { toast.error('Select an employee'); return; }
+    if (!addDate) { toast.error('Select a date'); return; }
+    if (!addCheckIn) { toast.error('Enter check-in time'); return; }
+    if (addStatus === 'checked_out' && !addCheckOut) { toast.error('Enter check-out time'); return; }
+    setAddSaving(true);
+    const payload: any = {
+      user_id: addUserId,
+      date: addDate,
+      status: addStatus,
+      check_in: buildAzTimestamp(addDate, addCheckIn),
+      pauses: [],
+      total_worked_minutes: 0,
+    };
+    if (addStatus === 'checked_out') {
+      payload.check_out = buildAzTimestamp(addDate, addCheckOut);
+      const diff = (new Date(payload.check_out).getTime() - new Date(payload.check_in).getTime()) / 60000;
+      payload.total_worked_minutes = Math.max(0, diff);
+    }
+    const { error } = await supabase.from('attendance_records').insert(payload);
+    setAddSaving(false);
+    if (error) { toast.error(error.message || 'Error adding record'); return; }
+    toast.success('Record added');
+    await logActivity('add_attendance', `Added attendance for ${getName(addUserId)} on ${addDate}`);
+    setAddOpen(false);
+    fetchData();
+  };
+
   const filtered = records.filter(r => {
     if (!search) return true;
     return getName(r.user_id).toLowerCase().includes(search.toLowerCase());
