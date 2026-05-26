@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { CalendarDays, Users, Clock, Search, Pencil, Trash2, Download, Filter, RefreshCw, Printer } from 'lucide-react';
+import { CalendarDays, Users, Clock, Search, Pencil, Trash2, Download, Filter, RefreshCw, Printer, Plus } from 'lucide-react';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { formatTimeAZ, formatTimeAZ24, formatDateAZ, formatDateShortAZ, formatDateTimeFullAZ } from '@/lib/timezone';
 
@@ -28,6 +28,13 @@ const AdminAttendance = () => {
   const [editCheckIn, setEditCheckIn] = useState('');
   const [editCheckOut, setEditCheckOut] = useState('');
   const [editStatus, setEditStatus] = useState<'checked_in' | 'paused' | 'checked_out'>('checked_out');
+  const [addOpen, setAddOpen] = useState(false);
+  const [addUserId, setAddUserId] = useState<string>('');
+  const [addDate, setAddDate] = useState('');
+  const [addCheckIn, setAddCheckIn] = useState('');
+  const [addCheckOut, setAddCheckOut] = useState('');
+  const [addStatus, setAddStatus] = useState<'checked_in' | 'paused' | 'checked_out'>('checked_out');
+  const [addSaving, setAddSaving] = useState(false);
 
   // Sync dates with current biweekly period when anchor changes
   useEffect(() => {
@@ -128,6 +135,43 @@ const AdminAttendance = () => {
     const { error } = await supabase.from('attendance_records').delete().eq('id', rec.id);
     if (error) toast.error('Error deleting');
     else { toast.success('Record deleted'); await logActivity('delete_attendance', `Deleted attendance for ${getName(rec.user_id)}`); fetchData(); }
+  };
+
+  const openAdd = () => {
+    setAddUserId('');
+    setAddDate(new Date().toLocaleDateString('en-CA', { timeZone: 'America/Phoenix' }));
+    setAddCheckIn('09:00');
+    setAddCheckOut('17:00');
+    setAddStatus('checked_out');
+    setAddOpen(true);
+  };
+
+  const saveAdd = async () => {
+    if (!addUserId) { toast.error('Select an employee'); return; }
+    if (!addDate) { toast.error('Select a date'); return; }
+    if (!addCheckIn) { toast.error('Enter check-in time'); return; }
+    if (addStatus === 'checked_out' && !addCheckOut) { toast.error('Enter check-out time'); return; }
+    setAddSaving(true);
+    const payload: any = {
+      user_id: addUserId,
+      date: addDate,
+      status: addStatus,
+      check_in: buildAzTimestamp(addDate, addCheckIn),
+      pauses: [],
+      total_worked_minutes: 0,
+    };
+    if (addStatus === 'checked_out') {
+      payload.check_out = buildAzTimestamp(addDate, addCheckOut);
+      const diff = (new Date(payload.check_out).getTime() - new Date(payload.check_in).getTime()) / 60000;
+      payload.total_worked_minutes = Math.max(0, diff);
+    }
+    const { error } = await supabase.from('attendance_records').insert(payload);
+    setAddSaving(false);
+    if (error) { toast.error(error.message || 'Error adding record'); return; }
+    toast.success('Record added');
+    await logActivity('add_attendance', `Added attendance for ${getName(addUserId)} on ${addDate}`);
+    setAddOpen(false);
+    fetchData();
   };
 
   const filtered = records.filter(r => {
@@ -367,6 +411,9 @@ const AdminAttendance = () => {
           <p className="text-xs text-muted-foreground mt-0.5">Default range follows the current biweekly period</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button size="sm" className="gap-1.5 text-xs" onClick={openAdd}>
+            <Plus className="size-3.5" /> Add Record
+          </Button>
           <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => fetchData()}>
             <RefreshCw className="size-3.5" /> Refresh
           </Button>
@@ -534,6 +581,43 @@ const AdminAttendance = () => {
               <Input type="time" value={editCheckOut} onChange={e => setEditCheckOut(e.target.value)} disabled={editStatus !== 'checked_out'} />
             </div>
             <Button onClick={saveEdit} className="w-full">Save Changes</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Add Attendance Record</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Employee</Label>
+              <Select value={addUserId} onValueChange={setAddUserId}>
+                <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
+                <SelectContent>
+                  {employees.map(emp => (
+                    <SelectItem key={emp.user_id} value={emp.user_id}>{emp.full_name || emp.email}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2"><Label>Date (Arizona)</Label><Input type="date" value={addDate} onChange={e => setAddDate(e.target.value)} /></div>
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={addStatus} onValueChange={(v) => setAddStatus(v as any)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="checked_in">In Progress (Working)</SelectItem>
+                  <SelectItem value="paused">On Break</SelectItem>
+                  <SelectItem value="checked_out">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2"><Label>Check In Time (AZ)</Label><Input type="time" value={addCheckIn} onChange={e => setAddCheckIn(e.target.value)} /></div>
+            <div className="space-y-2">
+              <Label>Check Out Time (AZ)</Label>
+              <Input type="time" value={addCheckOut} onChange={e => setAddCheckOut(e.target.value)} disabled={addStatus !== 'checked_out'} />
+            </div>
+            <Button onClick={saveAdd} disabled={addSaving} className="w-full">{addSaving ? 'Saving...' : 'Add Record'}</Button>
           </div>
         </DialogContent>
       </Dialog>
