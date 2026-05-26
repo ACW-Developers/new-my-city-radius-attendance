@@ -411,6 +411,9 @@ const AdminAttendance = () => {
           <p className="text-xs text-muted-foreground mt-0.5">Default range follows the current biweekly period</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button size="sm" className="gap-1.5 text-xs" onClick={openAdd}>
+            <Plus className="size-3.5" /> Add Record
+          </Button>
           <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => fetchData()}>
             <RefreshCw className="size-3.5" /> Refresh
           </Button>
